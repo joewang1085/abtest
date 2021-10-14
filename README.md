@@ -1,5 +1,5 @@
 # abtest
-A simple A/B Test system
+A simple A/B Test system, which supports GRPC.
 
 #  AB Test 简介 
 A/B测试作为数据驱动增长的核心工具，可以有效地提升流量的转化效率和产研的迭代效率，其重要性不言而喻。
