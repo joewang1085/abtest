@@ -1,0 +1,149 @@
+syntax = "proto3";
+
+package abtest_proto;
+
+option go_package = "foo.com/this.is.ignored;ignored";
+
+// Interface exported by the server.
+service ABTestService {
+  // A simple RPC.
+
+  // GetABTestZone is to match the ABTest target Zone
+  rpc GetABTestZone(GetABTestZoneRequest) returns (GetABTestZoneResponse) {}
+
+  // PushABTestData is to push abtest data to mq
+  rpc PushABTestData(PushABTestDataRequest) returns (PushABTestDataResponse) {}
+}
+
+// Project is a completed AB test Lab config. Different Projects are independent of each other
+// Next ID: 2
+message Project {
+  // The ID of the Project
+  string id = 1;
+}
+
+// Layer is a time dimension in a Project which contains Zones for random diversion of users.
+// Next ID: 4
+message Layer {
+  // The ID of the Layer
+  string id = 1;
+
+  // ParentZones is where the users of this layer come from
+  repeated Zone parent_zones = 2;
+
+  // TotalWeight is the total diversion of the users
+  int32 total_weight = 3;
+}
+
+// Zone is a lab in the layer
+// Next ID: 8
+message Zone {
+  // The ID of the Zone
+  string id = 1;
+
+  // The Project of the Zone
+  Project project = 2;
+
+  // The Layer of the Zone
+  Layer layer = 3;
+
+  // The Weight of the Zone
+  Weight weight = 4;
+
+  // The Label of the Zone which to match the logic code
+  string label = 5;
+
+  // The Description of the Zone
+  string description = 6;
+
+  // The UserGroups of the Zone
+  repeated string user_groups = 7;
+}
+
+// The Weight of Zone
+// Next ID: 3
+message Weight {
+  // Min number
+  int32 min = 1;
+
+  // Max number
+  int32 max = 2;
+}
+
+// The request of GetABTest
+// Next ID: 4
+message GetABTestZoneRequest {
+  // Required. The ProjectID to match
+  string project_id = 1;
+
+  // Required. The Hashkey for random diversion
+  string hash_key = 2;
+
+  // Required. The LayerID to match
+  string layer_id = 3;
+}
+
+// The response of GetABTest
+// Next ID: 2
+message GetABTestZoneResponse {
+  // The target Zone of once random diversion
+  Zone zone = 1;
+}
+
+// LabData is a self defined data of the service
+// Next ID: 3
+message LabData {
+  // Key is the key of lab data
+  string key = 1;
+
+  // Value is the value of lab data
+  string value = 2;
+}
+
+// The request of PushABTestData
+// Next ID: 6
+message PushABTestDataRequest {
+  // Required. The ProjectID to match
+  string project_id = 1;
+
+  // Required. The Hashkey for random diversion
+  string hash_key = 2;
+
+  // The type of Hashkey
+  string key_type = 3;
+
+  // Data is self defined data
+  repeated LabData data = 4;
+
+  // The login ID
+  string login_id = 5;
+}
+
+// The response of PushABTestData
+// Next ID: 1
+message PushABTestDataResponse {}
+
+// The Message sent to mq
+// Next ID: 8
+message ABTestMessage {
+  // The id of project
+  string project_id = 1;
+
+  // The hash key
+  string hash_key = 2;
+
+  // The targeted Strategy
+  string strategy = 3;
+
+  // The type of the hash key
+  string key_type = 4;
+
+  // The login id may usually be userID
+  string login_id = 5;
+
+  // The self defined extra data may usually be empty
+  string ext = 6;
+
+  // the created time of message
+  string created_time = 7;
+}

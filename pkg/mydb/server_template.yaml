@@ -1,0 +1,7 @@
+server_config:
+  address: 9527
+prometheus_config:
+  address: 8989
+db_config:
+  duration: 60
+  
